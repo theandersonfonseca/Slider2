@@ -67,8 +67,7 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 5rem;
-  color: #fff;
-  opacity: 30%;
+  color: rgba(189, 189, 189, 0.801);
   font-weight: 800;
   cursor: pointer;
   transition: all 0.4s;
@@ -77,7 +76,7 @@
 
 .previous:hover,
 .next:hover {
-  opacity: 70%;
+  color: #fff;
 }
 
 .previous {
