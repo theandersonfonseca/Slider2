@@ -1,6 +1,8 @@
 import React from 'react';
 import './App.css';
-import slides from './Slides';
+import slides from './slides';
+import Controls from './Controls';
+import SlidesList from './SlidesList';
 
 class App extends React.Component {
   constructor(props) {
@@ -12,6 +14,15 @@ class App extends React.Component {
       nextSlide: slides[1],
     };
   }
+
+  componentDidMount = () => {
+    this.interval = setInterval(
+      () => this.updateState(this.state.nextSlide),
+      5000
+    );
+  };
+
+  componentWillUnmount = () => clearInterval(this.interval);
 
   getSlide = (currentSlide, nextOrPrevious) => {
     let index = slides.findIndex((slide) => slide === currentSlide);
@@ -25,31 +36,14 @@ class App extends React.Component {
   };
 
   updateState = (currentSlide) => {
+    this.componentWillUnmount();
+
     this.setState({
       currentSlide: currentSlide,
       nextSlide: this.getSlide(currentSlide, 'next'),
       previousSlide: this.getSlide(currentSlide, 'previous'),
     });
-  };
 
-  componentDidMount = () => {
-    this.interval = setInterval(
-      () => this.updateState(this.state.nextSlide),
-      5000
-    );
-  };
-
-  componentWillUnmount = () => clearInterval(this.interval);
-
-  setPreviousSlide = () => {
-    this.componentWillUnmount();
-    this.updateState(this.state.previousSlide);
-    this.componentDidMount();
-  };
-
-  setNextSlide = () => {
-    this.componentWillUnmount();
-    this.updateState(this.state.nextSlide);
     this.componentDidMount();
   };
 
@@ -58,50 +52,31 @@ class App extends React.Component {
 
     if (!slide) return;
 
-    this.componentWillUnmount();
     this.updateState(slide);
-    this.componentDidMount();
   };
 
   render() {
     return (
       <div className="container">
-        <ul className="controls">
-          {slides.map((slide) => (
-            <li key={slide} onClick={this.handleClickOnControl}>
-              <img
-                className={
-                  this.state.currentSlide === slide
-                    ? 'control control-active'
-                    : 'control'
-                }
-                src={slide}
-                alt={slide}
-              />
-            </li>
-          ))}
-        </ul>
+        <Controls
+          handleClickOnControl={this.handleClickOnControl}
+          currentSlide={this.state.currentSlide}
+        />
 
         <div className="slider">
-          <span className="previous" onClick={this.setPreviousSlide}>
+          <span
+            className="previous"
+            onClick={() => this.updateState(this.state.previousSlide)}
+          >
             {'<'}
           </span>
 
-          <ul className="slides">
-            {slides.map((slide) => (
-              <li className="slide" key={slide}>
-                <img
-                  className={
-                    this.state.currentSlide === slide ? 'img img-active' : 'img'
-                  }
-                  src={slide}
-                  alt={slide}
-                />
-              </li>
-            ))}
-          </ul>
+          <SlidesList currentSlide={this.state.currentSlide} />
 
-          <span className="next" onClick={this.setNextSlide}>
+          <span
+            className="next"
+            onClick={() => this.updateState(this.state.nextSlide)}
+          >
             {'>'}
           </span>
         </div>
